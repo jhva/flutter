@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carrot_market/components/manor_temperature_widget.dart';
 import 'package:carrot_market/page/app.dart';
 import 'package:flutter/material.dart';
 
@@ -60,7 +61,7 @@ class _DetailContentViewState extends State<DetailContentView> {
     );
   }
 
-  Widget bodyWidget() {
+  Widget _makeSlider() {
     return Container(
         child: Stack(
       //사진안으로 들어가기위해서 dot 부분이
@@ -118,6 +119,43 @@ class _DetailContentViewState extends State<DetailContentView> {
         ),
       ],
     ));
+  }
+
+  Widget _sellerSimpleInfo() {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Row(
+        children: [
+          //첫번째달락
+
+          CircleAvatar(
+            //아바타
+            radius: 25,
+            backgroundImage: Image.asset("assets/images/user.png").image,
+          ),
+          const SizedBox(width: 10),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "개발하는 남자",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              Text(
+                "제주시 도달동",
+              )
+            ],
+          ),
+          Expanded(child: MannorTemperature(mannorTemp: 37.5)),
+        ],
+      ),
+    );
+  }
+
+  Widget bodyWidget() {
+    return Column(
+      children: [_makeSlider(), _sellerSimpleInfo()],
+    );
   }
 
   Widget BottomNavigationBarWidget() {
