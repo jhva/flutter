@@ -1,3 +1,4 @@
+import 'package:carrot_market/page/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -102,64 +103,78 @@ class _HomeState extends State<Home> {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       itemBuilder: (BuildContext context, int index) {
-        return Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(children: [
-              ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  child: Image.asset(
-                    datas[index]["image"]!,
-                    width: 100,
-                    height: 100,
-                  )),
-              Expanded(
-                child: Container(
-                    height: 100,
-                    padding: const EdgeInsets.only(left: 20), //글자와 이미지 간격
-                    // width: MediaQuery.of(context).size.width - 100, //연산은 가급적 피하자
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start, //좌우
+        return GestureDetector(
+          onTap: () {
+            //페이지전환
+            Navigator.push(context,
+                //페이지이동
+                MaterialPageRoute(builder: (BuildContext context) {
+              return DetailContentView(data: datas[index]);
+            }));
+          },
+          child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(children: [
+                ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    child: Hero(
+                      //디테일로갈때 애니메이션 Hero tag 값을 넣어주면 받는쪽에서도 똑같이해줘야함
+                      tag: datas[index]["cid"] as String,
+                      child: Image.asset(
+                        datas[index]["image"]!,
+                        width: 100,
+                        height: 100,
+                      ),
+                    )),
+                Expanded(
+                  child: Container(
+                      height: 100,
+                      padding: const EdgeInsets.only(left: 20), //글자와 이미지 간격
+                      // width: MediaQuery.of(context).size.width - 100, //연산은 가급적 피하자
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start, //좌우
 
-                        children: [
-                          Text(
-                            datas[index]["title"]!,
-                            overflow: TextOverflow.ellipsis, //글자가 너무길어서 넘칠경우
-                            style: TextStyle(fontSize: 15),
-                          ),
-                          SizedBox(height: 5),
-                          Text(datas[index]["location"]!,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black.withOpacity(0.3),
-                              )),
-                          SizedBox(height: 5),
-                          Text(
-                            caclStringToWon(datas[index]["price"]!),
-                            style: TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end, //가로세로
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              // crossAxisAlignment:  // 위아래 ,
-                              children: [
-                                SvgPicture.asset(
-                                  "assets/svg/heart_off.svg",
-                                  width: 13,
-                                  height: 13, // option + enter
-                                ),
-                                const SizedBox(width: 5),
-                                Text(datas[index]["likes"]!)
-                                // Padding(
-                                //   padding: const EdgeInsets.only(left: 5), //only 오직 한군데만 넣기
-                                //   child:,
-                                // ),
-                              ],
+                          children: [
+                            Text(
+                              datas[index]["title"]!,
+                              overflow: TextOverflow.ellipsis, //글자가 너무길어서 넘칠경우
+                              style: TextStyle(fontSize: 15),
                             ),
-                          ),
-                        ])),
-              ),
-            ]));
+                            SizedBox(height: 5),
+                            Text(datas[index]["location"]!,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black.withOpacity(0.3),
+                                )),
+                            SizedBox(height: 5),
+                            Text(
+                              caclStringToWon(datas[index]["price"]!),
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end, //가로세로
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                // crossAxisAlignment:  // 위아래 ,
+                                children: [
+                                  SvgPicture.asset(
+                                    "assets/svg/heart_off.svg",
+                                    width: 13,
+                                    height: 13, // option + enter
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(datas[index]["likes"]!)
+                                  // Padding(
+                                  //   padding: const EdgeInsets.only(left: 5), //only 오직 한군데만 넣기
+                                  //   child:,
+                                  // ),
+                                ],
+                              ),
+                            ),
+                          ])),
+                ),
+              ])),
+        );
         // 말그대로 아이템 ,
       },
       itemCount: 10,

@@ -13,9 +13,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Deㄴㅇmo',
       theme: ThemeData(
-        primaryColor: Colors.white,
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          ),
       home: const App(),
     );
   }
