@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
@@ -11,12 +11,23 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<Map<String, String>> datas = [];
+  late String currentLocation;
+  final Map<String, String> locationTypeToString = {
+    "ara": "아라동",
+    "ora": "오라동",
+    "donam": "도남동",
+  };
+  static final oCcy = new NumberFormat("#,###", "ko_KR");
+  String caclStringToWon(String price) {
+    return "${oCcy.format(int.parse(price))} 원";
+  }
 
-  late int _currentPageIdx;
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    _currentPageIdx = 0;
+
+    currentLocation = "ara";
     datas = [
       {
         "cid": "1",
@@ -107,17 +118,37 @@ class _HomeState extends State<Home> {
         onTap: () {
           print('클릭');
         },
-        child: const Row(
-          children: [
-            Text(
-              "아라동",
-              style: TextStyle(color: Colors.black),
-            ),
-            Icon(
-              Icons.arrow_drop_down,
-              color: Colors.black,
-            ),
-          ],
+        child: PopupMenuButton<String>(
+          offset: Offset(0, 30),
+          shape: ShapeBorder.lerp(
+              //팝업메뉴 border
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              1),
+          onSelected: (String selected) {
+            setState(() {
+              currentLocation = selected;
+            });
+          },
+          itemBuilder: (BuildContext context) {
+            return [
+              const PopupMenuItem(value: "ara", child: Text("아라동")),
+              const PopupMenuItem(value: "ora", child: Text("오라동")),
+              const PopupMenuItem(value: "donam", child: Text("도남동")),
+            ];
+          },
+          child: Row(
+            children: [
+              Text(
+                locationTypeToString[currentLocation]!,
+                style: const TextStyle(color: Colors.black),
+              ),
+              const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.black,
+              ),
+            ],
+          ),
         ),
       ),
       // 페이지이름
@@ -211,67 +242,11 @@ class _HomeState extends State<Home> {
     ); // 리스트 구분선
   }
 
-  static final oCcy = new NumberFormat("#,###", "ko_KR");
-  String caclStringToWon(String price) {
-    return "${oCcy.format(int.parse(price))} 원";
-  }
-
-  BottomNavigationBarItem _bottomNavigationBarItem(
-      String iconName, String label) {
-    return BottomNavigationBarItem(
-        icon: Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: SvgPicture.asset(
-            "assets/svg/${iconName}_off.svg",
-            width: 22,
-          ),
-        ),
-        label: label);
-  }
-
-  Widget bottomNavigationBarWidget() {
-    return BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, //애니메이션 타입 설정
-        onTap: (int index) {
-          print(index);
-          setState(() {
-            _currentPageIdx = index; //애니메이션호과가 발동됨
-          });
-        },
-        currentIndex: _currentPageIdx,
-        selectedItemColor: Colors.black,
-        selectedFontSize: 12,
-        selectedLabelStyle: const TextStyle(color: Colors.black),
-        items: [
-          _bottomNavigationBarItem(
-            "home",
-            "홈",
-          ),
-          _bottomNavigationBarItem(
-            "notes",
-            "동네생활",
-          ),
-          _bottomNavigationBarItem(
-            "location",
-            "내 근처",
-          ),
-          _bottomNavigationBarItem(
-            "chat",
-            "채팅",
-          ),
-          _bottomNavigationBarItem(
-            "user",
-            "나의 당근",
-          ),
-        ]);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarWidget(),
       body: bodyWidget(),
-      bottomNavigationBar: bottomNavigationBarWidget(),
     );
   }
 }

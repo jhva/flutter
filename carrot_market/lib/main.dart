@@ -1,4 +1,4 @@
-import 'package:carrot_market/page/Home.dart';
+import 'package:carrot_market/page/app.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.white,
         // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const Home(),
+      home: const App(),
     );
   }
 }
