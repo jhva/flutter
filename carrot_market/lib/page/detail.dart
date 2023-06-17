@@ -153,9 +153,105 @@ class _DetailContentViewState extends State<DetailContentView> {
   }
 
   Widget bodyWidget() {
-    return Column(
-      children: [_makeSlider(), _sellerSimpleInfo()],
+    return CustomScrollView(slivers: [
+      SliverList(
+        delegate: SliverChildListDelegate(
+          [
+            _makeSlider(),
+            _sellerSimpleInfo(),
+            _line(),
+            _contentsDetail(),
+            _line(),
+            _otherCellContents(),
+          ],
+        ),
+      ),
+      SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        sliver: SliverGrid(
+          delegate: SliverChildListDelegate(List.generate(20, (index) {
+            return Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ClipRRect(
+                    child: Container(color: Colors.grey, height: 120),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  Text(
+                    "상품제목",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    "금액",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+            );
+          }).toList()),
+
+          //grid
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //몇개씩ㅂ ㅗ여지고 , 간격 조절
+              crossAxisCount: 2,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10),
+        ),
+      )
+    ]);
+  }
+
+  Widget _otherCellContents() {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "판매자님의 판매 상품",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            "모두보기",
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          )
+        ],
+      ),
     );
+  }
+
+  Widget _contentsDetail() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 15), //마진 혹은 패딩쓸때
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(height: 15),
+          Text(widget.data["title"] as String,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          Text("디지털/가전 - 22 시간 전 ",
+              style: TextStyle(color: Colors.grey, fontSize: 12)),
+          SizedBox(height: 15),
+          Text("선물받은 새상품이고\n 상품 꺼내보기만 했습니다 \n거래는 직거래만 합니다.",
+              style: TextStyle(height: 1.5, fontSize: 15)),
+          SizedBox(height: 15),
+          Text("채팅 3  관심 17 - 조회 295",
+              style: TextStyle(color: Colors.grey, fontSize: 12)),
+          SizedBox(height: 15),
+        ],
+      ),
+    );
+  }
+
+  Widget _line() {
+    return Container(
+      height: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 15),
+      color: Colors.grey.withOpacity(0.3),
+    );
+    //각각에 대한 구분선
   }
 
   Widget BottomNavigationBarWidget() {
