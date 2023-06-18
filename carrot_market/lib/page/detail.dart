@@ -1,7 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:carrot_market/components/manor_temperature_widget.dart';
 import 'package:carrot_market/page/app.dart';
+import 'package:carrot_market/utils/data_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class DetailContentView extends StatefulWidget {
   //넘겨받을 타입
@@ -14,11 +16,41 @@ class DetailContentView extends StatefulWidget {
   State<DetailContentView> createState() => _DetailContentViewState();
 }
 
-class _DetailContentViewState extends State<DetailContentView> {
+class _DetailContentViewState extends State<DetailContentView>
+    with
+//animation vsync this오류 잡을려고
+        SingleTickerProviderStateMixin {
   late Size size;
 
   late List<String> imgList;
+  late double scrollpositorionToAlpha = 0;
   final CarouselController _controller = CarouselController();
+
+  ScrollController scrollController = ScrollController();
+
+  late AnimationController _animationController;
+  late Animation _colorTween;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _animationController = AnimationController(vsync: this);
+    _colorTween = ColorTween(begin: Colors.white, end: Colors.black)
+        .animate(_animationController);
+    scrollController.addListener(() {
+      //scroll 이 변활때마다 찍히게됨
+
+      setState(() {
+        if (scrollController.offset > 255) {
+          scrollpositorionToAlpha = 255;
+        } else {
+          scrollpositorionToAlpha = scrollController.offset; //scroll 위치
+        }
+        _animationController.value = scrollpositorionToAlpha / 255;
+      });
+    });
+  }
 
   late int _current;
   @override
@@ -40,25 +72,27 @@ class _DetailContentViewState extends State<DetailContentView> {
     return AppBar(
       elevation: 0, //선없애기
 
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white.withAlpha(scrollpositorionToAlpha.toInt()),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: _makeIcon(Icons.arrow_back),
         onPressed: () {
           Navigator.pop(context);
         },
       ),
       actions: [
-        IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.share, color: Colors.white)),
-        IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.more,
-              color: Colors.white,
-            )),
+        IconButton(onPressed: () {}, icon: _makeIcon(Icons.share)),
+        IconButton(onPressed: () {}, icon: _makeIcon(Icons.more)),
       ],
     );
+  }
+
+  Widget _makeIcon(IconData icon) {
+    return AnimatedBuilder(
+        animation: _colorTween,
+        builder: (context, child) => Icon(
+              icon,
+              color: _colorTween.value,
+            ));
   }
 
   Widget _makeSlider() {
@@ -153,7 +187,7 @@ class _DetailContentViewState extends State<DetailContentView> {
   }
 
   Widget bodyWidget() {
-    return CustomScrollView(slivers: [
+    return CustomScrollView(controller: scrollController, slivers: [
       SliverList(
         delegate: SliverChildListDelegate(
           [
@@ -256,10 +290,62 @@ class _DetailContentViewState extends State<DetailContentView> {
 
   Widget BottomNavigationBarWidget() {
     return Container(
-      width: size.width,
-      height: 55,
-      color: Colors.red,
-    );
+        width: size.width,
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        height: 55,
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                print("관심상품 이벤트 발생");
+              },
+              child: SvgPicture.asset(
+                "assets/svg/heart_off.svg",
+                width: 25,
+                height: 24,
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(left: 15, right: 10),
+              width: 1,
+              height: 40,
+              color: Colors.grey.withOpacity(0.3),
+            ),
+            Column(
+              children: [
+                Text(
+                  DetailUtils.caclStringToWon(widget.data["price"]!),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "가격제안불가",
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                )
+              ],
+            ),
+            Expanded(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Color(0xfff09f4f),
+                  ),
+                  child: Text(
+                    "채팅으로 거래하기",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ))
+          ],
+        ));
   }
 
   @override
