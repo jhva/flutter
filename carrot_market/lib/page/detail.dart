@@ -31,10 +31,16 @@ class _DetailContentViewState extends State<DetailContentView>
   late AnimationController _animationController;
   late Animation _colorTween;
 
+  late bool isMyFavoriteContent; // 관심상품 등록
+
+  late final GlobalKey<ScaffoldMessengerState> scaffoldMessage;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    isMyFavoriteContent = false;
+    scaffoldMessage = GlobalKey<ScaffoldMessengerState>();
+
     _animationController = AnimationController(vsync: this);
     _colorTween = ColorTween(begin: Colors.white, end: Colors.black)
         .animate(_animationController);
@@ -297,12 +303,28 @@ class _DetailContentViewState extends State<DetailContentView>
           children: [
             GestureDetector(
               onTap: () {
-                print("관심상품 이벤트 발생");
+                setState(() {
+                  isMyFavoriteContent = !isMyFavoriteContent;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: const Duration(milliseconds: 1000),
+                    content: Text(isMyFavoriteContent
+                        ? "관심목록에 추가됐어요."
+                        : "관심목록에서 제거됐어요.")));
+                // scaffoldMessage?.currentState?.showSnackBar(SnackBar(
+                //   duration: const Duration(milliseconds: 1000),
+                //   content: Text(
+                //       isMyFavoriteContent ? "관심목록에 추가됐어요." : "관심목록에서 제거됐어요."),
+                // ));
               },
               child: SvgPicture.asset(
-                "assets/svg/heart_off.svg",
+                isMyFavoriteContent
+                    ? "assets/svg/heart_on.svg"
+                    : "assets/"
+                        "svg/heart_off.svg",
                 width: 25,
                 height: 24,
+                color: const Color(0xfff08f4f),
               ),
             ),
             Container(
